@@ -8,9 +8,12 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
+	<Grid>
+		<Grid x:Name="mainGrid" Visibility="Visible">
+			
+		</Grid>
+		<Grid x:Name="testGrid" Visibility="Collapsed">
 
-	<Grid x:Name="mainGrid">
-		<!--<Rectangle />-->
-		<!--<Button Content="Click" VerticalAlignment="Center" HorizontalAlignment="Center"/>-->
+		</Grid>
 	</Grid>
 </Page>

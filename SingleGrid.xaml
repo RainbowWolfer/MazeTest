@@ -9,9 +9,9 @@
     d:DesignHeight="100"
     d:DesignWidth="100">
 
-	<Grid>
-		<!--<Rectangle x:Name="centerR"/>-->
-		<TextBlock x:Name="MyText" Text="Hello World" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+	<Grid Tapped="Grid_Tapped">
+		<Rectangle x:Name="centerR" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"/>
+		<TextBlock x:Name="MyText" Text="Hello World" VerticalAlignment="Center" HorizontalAlignment="Center" Tapped="MyText_Tapped"/>
 		<Rectangle x:Name="topR" Fill="White" Height="2" VerticalAlignment="Top"/>
 		<Rectangle x:Name="bottomR" Fill="White" Height="2" VerticalAlignment="Bottom"/>
 		<Rectangle x:Name="leftR" Fill="White" Width="2" HorizontalAlignment="Left"/>

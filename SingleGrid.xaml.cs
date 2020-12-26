@@ -25,11 +25,15 @@ namespace MazeTest {
 			this.InitializeComponent();
 			Initialize();
 		}
+		public SingleGrid(Node node, string str) {
+			this.node = node;
+			this.InitializeComponent();
+			MyText.Visibility = Visibility.Visible;
+			MyText.Text = str;
+		}
 		public void Initialize() {
 			if(node == null) {
 				throw new Exception("???");
-				//SetDirections(Direction.ALLFALSE);
-				//return;
 			}
 
 			bool b = Instance.row * Instance.col > 400;
@@ -40,12 +44,13 @@ namespace MazeTest {
 				MyText.Text += "\nUNVISITED";
 			}
 			SetDirections(node.d);
-			//SetDirections(Direction.ALLTRUE);
 			if(node.previous != null) {
-				//Color c = App.GetRandomColor();
-				//SetFill(c);
-				//Debug.WriteLine("Color : " + c);
 				MyText.Text += "\nPre " + node.previous.pos;
+			}
+			if(node.onWay) {
+				centerR.Fill = new SolidColorBrush(Colors.Red);
+			} else {
+				centerR.Fill = new SolidColorBrush(Colors.Transparent);
 			}
 		}
 		public void AdjustBorder(int w) {
@@ -55,18 +60,24 @@ namespace MazeTest {
 			rightR.Width = w;
 		}
 		public void SetFill(Color color) {
-			//centerR.Fill = new SolidColorBrush(color);
+			centerR.Fill = new SolidColorBrush(color);
 		}
 		public void SetDirections(Direction dir) {
 			topR.Visibility = !dir.up ? Visibility.Visible : Visibility.Collapsed;
 			bottomR.Visibility = !dir.down ? Visibility.Visible : Visibility.Collapsed;
 			leftR.Visibility = !dir.left ? Visibility.Visible : Visibility.Collapsed;
 			rightR.Visibility = !dir.right ? Visibility.Visible : Visibility.Collapsed;
-			//node.d.up = dir.up;
-			//node.d.down = dir.down;
-			//node.d.left = dir.left;
-			//node.d.right = dir.right;
 		}
 
+		private void Grid_Tapped(object sender, TappedRoutedEventArgs e) {
+			//Instance.CreatePath(this.node);
+			if(Instance.finishGenerating) {
+				//Instance.PrintPath(node);
+			}
+		}
+
+		private void MyText_Tapped(object sender, TappedRoutedEventArgs e) {
+
+		}
 	}
 }

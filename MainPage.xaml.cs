@@ -20,39 +20,28 @@ using Windows.UI.Xaml.Shapes;
 namespace MazeTest {
 	public sealed partial class MainPage: Page {
 		public static MainPage Instance;
-		//public Dictionary<Vector2, SingleGrid> cells;
 
 		public int row;
 		public int col;
 
+		public bool finishGenerating;
+
 		public MainPage() {
 			Instance = this;
 			this.InitializeComponent();
-			//CreateMaze(10, 10, Vector2.Zero);
-			//CreateNodes(10, 10);
-			//Node n1 = new Node(1, 1);
-			//Node n2 = new Node(1, 2);
-
-			//SetDirection(n1, n2);
 		}
 		private async void Page_Loaded(object sender, RoutedEventArgs e) {
-			//Debug.WriteLine("Begin");
-			await Task.Delay(100);
-			CreateNodes(50, 50);
-			//Debug.WriteLine("End");
+			await Task.Delay(1);
+			CreateNodes(4, 4);
+		}
+		public static Grid _testGrid => Instance.testGrid;
+		public void SwitchGrid() {
+			mainGrid.Visibility = mainGrid.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+			testGrid.Visibility = testGrid.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		//private int maxRow;
-		//private int maxColume;
-		//private List<Vector2> visited;
-		//private List<Vector2> unvisited;
 		public List<SingleGrid> grids = new List<SingleGrid>();
 		public void CreateMaze() {
-			//cells = new Dictionary<Vector2, SingleGrid>();
-			//visited = new List<Vector2>();
-			//unvisited = new List<Vector2>();
-			//maxRow = row;
-			//maxColume = col;
 			for(int x = 0; x < row; x++) {
 				mainGrid.RowDefinitions.Add(new RowDefinition());
 			}
@@ -61,20 +50,13 @@ namespace MazeTest {
 			}
 			for(int x = 0; x < row; x++) {
 				for(int y = 0; y < col; y++) {
-					//Debug.WriteLine(x + ":" + y);
 					SingleGrid grid = new SingleGrid(GetNode(x, y));
-					//grid.SetDirections(App.GetRandomBoolean(), App.GetRandomBoolean(), App.GetRandomBoolean(), App.GetRandomBoolean());
-					//cells.Add(new Vector2(x, y), grid);
 					grids.Add(grid);
 					Grid.SetRow(grid, y);
 					Grid.SetColumn(grid, x);
 					mainGrid.Children.Add(grid);
 				}
 			}
-
-
-			//cells.ContainsKey()
-
 		}
 		public void UpdateMaze() {
 			foreach(SingleGrid item in grids) {
@@ -82,23 +64,20 @@ namespace MazeTest {
 			}
 		}
 		public List<Node> nodes;
-		//public List<Node> visited;
 		public List<Node> unvisited;
 		public async void CreateNodes(int row, int col) {
 			this.row = row;
 			this.col = col;
-			//visited = new List<Node>();
 			unvisited = new List<Node>();
 			nodes = new List<Node>();
 			for(int i = 0; i < row; i++) {
 				for(int j = 0; j < col; j++) {
-					Node n = new Node(i, j);
+					Node n = new Node(i, j) { onWay = false };
 					nodes.Add(n);
 					unvisited.Add(n);
 				}
 			}
 			CreateMaze();
-			//unvisited = nodes;
 			Node startNode = nodes[0];
 			startNode.previous = null;
 			unvisited.Remove(nodes[0]);
@@ -109,8 +88,6 @@ namespace MazeTest {
 			while(next != null) {
 				if(unvisited.Contains(next)) {
 					unvisited.Remove(next);
-				} else {
-
 				}
 				Node tmp = next;
 				next = RandomAvailableNextNode(next);
@@ -122,18 +99,17 @@ namespace MazeTest {
 					if(unvisited.Count <= 0) {
 						break;
 					}
-					await Task.Delay(50);
-					//PrintPath(tmp);
+					await Task.Delay(1);
 					Node backTrace = BackTrace(tmp);
 					Debug.WriteLine(backTrace.pos.ToString());
-
-
 					next = backTrace;
-					//CreatePath(tmp);
-					//break;
 				}
 			}
-			//CreateMaze();
+			await Task.Delay(10);
+			finishGenerating = true;
+			var pf = new Pathfinding(nodes);
+			pf.Log();
+			pf.DrawInGrid();
 		}
 
 		public Node BackTrace(Node node) {
@@ -174,11 +150,17 @@ namespace MazeTest {
 			}
 		}
 
-		private void PrintPath(Node endNode) {
+		public void PrintPath(Node endNode) {
+			foreach(Node item in nodes) {
+				item.onWay = false;
+			}
 			while(endNode.previous != null) {
 				//Debug.WriteLine(endNode.pos);
+				endNode.onWay = true;
 				endNode = endNode.previous;
 			}
+			endNode.onWay = true;
+			UpdateMaze();
 		}
 		public Node GetNode(Vector2 v) {
 			if(v.x >= row || v.x < 0 || v.y >= col || v.y < 0) {
@@ -223,82 +205,123 @@ namespace MazeTest {
 				return Vector2.Right;
 			}
 		}
-		//public void CreatePath(Vector2 p1, Directions d) {
-		//	switch(d) {
-		//		case Directions.Up:
-		//			cells[p1].up = true;
-		//			cells[p1 + Vector2.Up].down = true;
-		//			break;
-		//		case Directions.Left:
-		//			cells[p1].left = true;
-		//			cells[p1 + Vector2.Left].right = true;
-		//			break;
-		//		case Directions.Down:
-		//			cells[p1].down = true;
-		//			cells[p1 + Vector2.Down].up = true;
-		//			break;
-		//		case Directions.Right:
-		//			cells[p1].right = true;
-		//			cells[p1 + Vector2.Right].left = true;
-		//			break;
-		//		default:
-		//			throw new Exception("???");
-		//	}
-		//}
-		public class Node {
-			public Vector2 pos;
-			public Direction d;
-			public Node previous;
-			public Node(int x, int y) {
-				this.pos = new Vector2(x, y);
-				d.up = false;
-				d.left = false;
-				d.down = false;
-				d.right = false;
-			}
-		}
-		public struct Direction {
-			public bool up;
-			public bool left;
-			public bool down;
-			public bool right;
+	}
+	public class Pathfinding {
+		private Node[] originNodes;
 
-			public static Direction ALLFALSE = new Direction(false, false, false, false);
-			public static Direction ALLTRUE = new Direction(true, true, true, true);
-			public Direction(bool up, bool left, bool down, bool right) {
-				this.up = up;
-				this.left = left;
-				this.down = down;
-				this.right = right;
-			}
-		}
+		private int row => MainPage.Instance.row * 2 - 1;
+		private int col => MainPage.Instance.col * 2 - 1;
 
-		//public Vector2[] GetSurrounding(Vector2 v) {
-		//	List<Vector2> result = new List<Vector2>();
-		//	if(v.x + 1 < maxRow) {
-		//		result.Add(v + Vector2.Right);
-		//	}
-		//	if(v.x - 1 >= 0) {
-		//		result.Add(v + Vector2.Left);
-		//	}
-		//	if(v.y - 1 >= 0) {
-		//		result.Add(v + Vector2.Down);
-		//	}
-		//	if(v.y + 1 < maxColume) {
-		//		result.Add(v + Vector2.Up);
-		//	}
-		//	return result.ToArray();
-		//}
-		/*
-		public bool CheckNext(Vector2 v) {
-			foreach(Vector2 item in Vector2.AllDirections) {
-				if(!visited.Contains(v + item)) {
-					return true;
+		public Dictionary<Vector2, Node> nodes;
+		public Pathfinding(List<Node> ns) {
+			originNodes = ns.ToArray();
+			nodes = new Dictionary<Vector2, Node>();
+
+			foreach(Node n in ns) {
+				//nodes.Add(n.pos, n);
+				n.walkable = true;
+				nodes[n.pos * 2] = n;
+				for(int i = 0; i < 4; i++) {
+					Vector2 v = n.pos * 2 + Vector2.AllDirections[i];
+					if(IsWithinBorder(v)) {
+						if(i == 0 && n.d.left) {
+							nodes[v] = new Node(v) { walkable = true };
+						} else if(i == 1 && n.d.up) {
+							nodes[v] = new Node(v) { walkable = true };
+						} else if(i == 2 && n.d.right) {
+							nodes[v] = new Node(v) { walkable = true };
+						} else if(i == 3 && n.d.down) {
+							nodes[v] = new Node(v) { walkable = true };
+						}
+					}
 				}
 			}
-			return false;
+			for(int x = 0; x < row; x++) {
+				for(int y = 0; y < col; y++) {
+					if(!nodes.ContainsKey(new Vector2(x, y))) {
+						nodes.Add(new Vector2(x, y), new Node(x, y) { walkable = false });
+					}
+				}
+			}
 		}
-		*/
+		public List<Node> FindPath(Vector2 start, Vector2 end) {
+
+			return new List<Node>();
+		}
+		public bool IsWithinBorder(Vector2 v) {
+			return v.x >= 0 && v.y >= 0 && v.x < row && v.y < col;
+		}
+		public void Log() {
+			for(int x = 0; x < row; x++) {
+				string line = "";
+				for(int y = 0; y < col; y++) {
+					//Node n = nodes[new Vector2(x, y)];
+					bool b = nodes.ContainsKey(new Vector2(x, y));
+					line += x + ":" + y + (b ? "YES" : "no") + "\t";
+				}
+				Debug.WriteLine(line + "\n");
+			}
+		}
+		public void DrawInGrid() {
+			for(int x = 0; x < row; x++) {
+				MainPage._testGrid.RowDefinitions.Add(new RowDefinition());
+			}
+			for(int y = 0; y < col; y++) {
+				MainPage._testGrid.ColumnDefinitions.Add(new ColumnDefinition());
+			}
+
+			for(int x = 0; x < row; x++) {
+				for(int y = 0; y < col; y++) {
+					string str = x + ":" + y + "\n";
+					str += nodes[new Vector2(x, y)].walkable ? "YES\n" : "no\n";
+					SingleGrid sg = new SingleGrid(nodes[new Vector2(x, y)], str);
+					sg.SetFill(nodes[new Vector2(x, y)].walkable ? Colors.Transparent : Colors.Red);
+					MainPage._testGrid.Children.Add(sg);
+					Grid.SetRow(sg, y);
+					Grid.SetColumn(sg, x);
+				}
+			}
+		}
+	}
+	public class Node {
+		public Vector2 pos;
+		public Direction d;
+
+		public bool onWay;
+
+		public bool walkable;
+
+		public int gCost;
+		public int hCost;
+		public int fCost => gCost + hCost;
+
+		public Node previous;
+		public Node(int x, int y) {
+			this.pos = new Vector2(x, y);
+			d = Direction.ALLFALSE;
+		}
+		public Node(Vector2 pos) {
+			this.pos = pos;
+			d = Direction.ALLFALSE;
+		}
+		public override string ToString() {
+			return "Node " + pos;
+		}
+	}
+	public struct Direction {
+		public bool up;
+		public bool left;
+		public bool down;
+		public bool right;
+
+		public static Direction ALLFALSE = new Direction(false, false, false, false);
+		public static Direction ALLTRUE = new Direction(true, true, true, true);
+		public Direction(bool up, bool left, bool down, bool right) {
+			this.up = up;
+			this.left = left;
+			this.down = down;
+			this.right = right;
+		}
 	}
 	public struct Vector2 {
 		public int x;
@@ -309,7 +332,7 @@ namespace MazeTest {
 		public static Vector2 Down => new Vector2(0, 1);
 		public static Vector2 Left => new Vector2(-1, 0);
 		public static Vector2 Zero => new Vector2(0, 0);
-		public static Vector2[] AllDirections => new Vector2[] { Up, Down, Left, Right };
+		public static Vector2[] AllDirections => new Vector2[] { Left, Up, Right, Down };
 
 		public Vector2(int x, int y) {
 			this.x = x;
