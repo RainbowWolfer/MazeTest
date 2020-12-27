@@ -9,10 +9,10 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
 	<Grid>
-		<Grid x:Name="mainGrid" Visibility="Visible">
-			
+		<Grid x:Name="mainGrid" Visibility="Collapsed">
+
 		</Grid>
-		<Grid x:Name="testGrid" Visibility="Collapsed">
+		<Grid x:Name="testGrid" Visibility="Visible">
 
 		</Grid>
 	</Grid>
