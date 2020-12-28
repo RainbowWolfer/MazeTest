@@ -32,7 +32,7 @@ namespace MazeTest {
 		}
 		private async void Page_Loaded(object sender, RoutedEventArgs e) {
 			await Task.Delay(1);
-			CreateNodes(4, 4);
+			CreateNodes(12, 12);
 		}
 		public static Grid _testGrid => Instance.testGrid;
 		public void SwitchGrid() {
@@ -78,6 +78,7 @@ namespace MazeTest {
 				}
 			}
 			CreateMaze();
+			
 			Node startNode = nodes[0];
 			startNode.previous = null;
 			unvisited.Remove(nodes[0]);
@@ -107,6 +108,7 @@ namespace MazeTest {
 			}
 			await Task.Delay(10);
 			finishGenerating = true;
+			/*
 			var pf = new Pathfinding(nodes);
 			//pf.Log();
 			List<PFNode> path = pf.FindPath(new Vector2(0, 0), new Vector2(row * 2 - 2, col * 2 - 2));
@@ -118,6 +120,7 @@ namespace MazeTest {
 					grids.Find((g) => g.node == item).SetFill(Colors.Green);
 				}
 			}
+			*/
 		}
 
 		public Node BackTrace(Node node) {
@@ -200,18 +203,6 @@ namespace MazeTest {
 			}
 			int r = new Random().Next(0, nexts.Count);
 			return nexts[r];
-		}
-		public Vector2 RandomDirection() {
-			int r = new Random().Next(0, 100);
-			if(r < 25) {
-				return Vector2.Up;
-			} else if(r < 50) {
-				return Vector2.Left;
-			} else if(r < 75) {
-				return Vector2.Down;
-			} else {
-				return Vector2.Right;
-			}
 		}
 	}
 	public class Pathfinding {
@@ -405,41 +396,41 @@ namespace MazeTest {
 			}
 		}
 	}
-	public class PFNode {
-		public Vector2 pos;
-		public bool walkable;
-		public int gCost;
-		public int hCost;
-		public int fCost => gCost + hCost;
-		public PFNode previous;
-		public PFNode(Vector2 pos) {
+	public class PFNode {//用作与寻路中的节点
+		public Vector2 pos;//记录位置
+		public bool walkable;//是否可以作为通道
+		public int gCost;//从开始点记录的所消耗距离
+		public int hCost;//从结束点记录的所消耗距离
+		public int fCost => gCost + hCost;//总消耗距离
+		public PFNode previous;//记录上一个节点
+		public PFNode(Vector2 pos) {//初始化
 			this.pos = pos;
 		}
-		public PFNode(int x, int y) {
+		public PFNode(int x, int y) {//初始化
 			this.pos = new Vector2(x, y);
 		}
 	}
 
-	public class Node {
-		public Vector2 pos;
-		public Direction d;
+	public class Node {//用作迷宫生成和记录迷宫的一般节点
+		public Vector2 pos;//位置
+		public Direction d;//4个方向分别是否为通路
 
-		public bool onWay;
+		public bool onWay;//用于记录是否在寻路路径上
 
-		public Node previous;
-		public Node(int x, int y) {
+		public Node previous;//记录上一个节点
+		public Node(int x, int y) {//初始化
 			this.pos = new Vector2(x, y);
 			d = Direction.ALLFALSE;
 		}
-		public Node(Vector2 pos) {
+		public Node(Vector2 pos) {//初始化
 			this.pos = pos;
 			d = Direction.ALLFALSE;
 		}
-		public override string ToString() {
+		public override string ToString() {//重写此方法可在Debug界面快速查看节点的位置
 			return "Node " + pos;
 		}
 	}
-	public struct Direction {
+	public struct Direction {//记录4个方向
 		public bool up;
 		public bool left;
 		public bool down;
@@ -447,17 +438,18 @@ namespace MazeTest {
 
 		public static Direction ALLFALSE = new Direction(false, false, false, false);
 		public static Direction ALLTRUE = new Direction(true, true, true, true);
-		public Direction(bool up, bool left, bool down, bool right) {
+		public Direction(bool up, bool left, bool down, bool right) {//初始化
 			this.up = up;
 			this.left = left;
 			this.down = down;
 			this.right = right;
 		}
 	}
-	public struct Vector2 {
+	public struct Vector2 {//用于记录二维数
 		public int x;
 		public int y;
 
+		//一些关于常数的定义
 		public static Vector2 Up => new Vector2(0, -1);
 		public static Vector2 Right => new Vector2(1, 0);
 		public static Vector2 Down => new Vector2(0, 1);

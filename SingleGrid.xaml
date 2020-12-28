@@ -11,7 +11,7 @@
 
 	<Grid Tapped="Grid_Tapped">
 		<Rectangle x:Name="centerR" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"/>
-		<TextBlock x:Name="MyText" Text="Hello World" VerticalAlignment="Center" HorizontalAlignment="Center" Tapped="MyText_Tapped"/>
+		<TextBlock x:Name="MyText" Text="Hello World" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 		<Rectangle x:Name="topR" Fill="White" Height="2" VerticalAlignment="Top"/>
 		<Rectangle x:Name="bottomR" Fill="White" Height="2" VerticalAlignment="Bottom"/>
 		<Rectangle x:Name="leftR" Fill="White" Width="2" HorizontalAlignment="Left"/>

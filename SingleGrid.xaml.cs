@@ -76,8 +76,5 @@ namespace MazeTest {
 			}
 		}
 
-		private void MyText_Tapped(object sender, TappedRoutedEventArgs e) {
-
-		}
 	}
 }
